@@ -67,10 +67,12 @@ ARG_OSCI supports two acquisition modes:
 - Integrated into the ESP32 microcontroller
 - Bandwidth: ~120 kHz
 - Suitable for general-purpose, low-frequency measurements
+- May present non-linearities depending on configuration and reference voltage
 
 #### External ADC (ADS7884):
 - 10-bit, high-speed SAR ADC
 - Bandwidth: ~1.25 MHz
+- Communicates with the ESP32 via SPI
 - Offers better resolution and higher fidelity
 - **Placement Note**: The ADC must be physically close to the ESP32 to minimize signal degradation and ensure proper timing.
 
@@ -87,35 +89,47 @@ Although other scales can be used for compensation, the limited tuning range of 
 
 ## Power Supply
 
-- Requires a **+5V input**, supplied via USB (ESP32 devkit) or external power source.
-- Includes a **–5V inverter (LM2776)** to supply op-amps and analog stages.
-- For improved stability, an external –5V supply may be connected through a dedicated header on the PCB.
+- Device powered via 5V USB or external 5V supply
+- –5V rail is generated internally via LM2776 inverter
+- For improved accuracy and reduced offset, a stable external –5V supply may be used instead, via a dedicated header
+- The –5V rail shows **sensitivity to voltage level and quality**, which may introduce noise or offset in sensitive measurements
 
 > Power supply ripple or variation on the –5V rail can introduce baseline offset.
 
 ## Offset Correction
 
-In case of unwanted signal offset due to power or analog front-end deviations:
+In case of unwanted signal offset due to analog front-end or supply variations:
 
-1. Connect the input to GND.
-2. Observe the zero level on the application.
-3. Apply a compensation in firmware using:
+1. Set the probe to the highest voltage scale.
+2. Connect the input to GND.
+3. Observe the measured zero level on the application.
+4. Apply compensation in firmware by adjusting the ADC's midpoint reference.
 
-V_corrected = V_measured – offset
+The firmware exposes two calibration variables:
+- **Default midpoint binary value** (e.g., 512 for 10-bit ADC)
+- **Default maximum binary value** (1023 for 10-bit ADC)
 
-## Error & Frequency Response Analysis
+To calculate the corrected midpoint:
 
-The circuit was designed using 5% tolerance passive components. A theoretical dispersion analysis was performed to estimate signal variation across frequency ranges due to tolerance stacking.
+```text
+corrected_mid = default_mid + ((default_max - default_mid) × V_measured_zero) / V_scale_max
 
-A dedicated plot shows the error vs. frequency response for each attenuation scale.
+> After adjusting corrected_mid, ensure that corrected_max remains less than twice the midpoint to preserve signal range and linearity.
 
-👉 Insert plot here: (Include your dispersion/error graph in this section)
-Example:
+## Frequency Response and Expected Error
 
+Due to component tolerances (~5%), the analog front-end may present small deviations in frequency response.
 
-Estimated amplitude error vs. frequency per scale using 5% tolerance components
+An error chart is available showing the variation of gain versus frequency for each scale.
 
-> For higher accuracy, consider using 1% tolerance resistors and capacitors in key analog stages.
+👉 **[Insert chart image here]**
+
+For improved accuracy, consider selecting 1% tolerance components or calibrating per scale.
+
+> For higher accuracy, consider using 1% tolerance resistors and capacitors in key analog stages, especially:
+> - The main amplifier circuit
+> - The series capacitor in the second attenuation stage
+> - The 40x attenuator in the first stage
 
 ##  Design Considerations
 
@@ -137,13 +151,11 @@ Estimated amplitude error vs. frequency per scale using 5% tolerance components
 ### Known Issues
 
 - Limited trimmer range limits compensation on high voltage scales
-- Internal ADC quality varies with ESP32 models
 - –5V rail may introduce noise or offset if not externally regulated
 
 ### Future Improvements
 
 - Firmware-based automatic zero-level calibration
-- Replace trimmer with digital potentiometer for better compensation
 - Modularize front-end for multi-channel acquisition
 - Improve PCB layout for EMC and signal integrity
 
