@@ -101,7 +101,6 @@ In case of unwanted signal offset due to power or analog front-end deviations:
 2. Observe the zero level on the application.
 3. Apply a compensation in firmware using:
 
-```text
 V_corrected = V_measured – offset
 
 ## Error & Frequency Response Analysis
