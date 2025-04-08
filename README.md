@@ -111,7 +111,7 @@ The firmware exposes two calibration variables:
 
 To calculate the corrected midpoint:
 
-$corrected_mid = default_mid + ((default_max - default_mid) × V_measured_zero) / V_scale_max$
+\text{corrected\_mid} = \text{default\_mid} + \frac{(\text{default\_max} - \text{default\_mid}) \cdot V_\text{measured\_zero}}{V_\text{scale\_max}}
 
 > After adjusting corrected_mid, ensure that corrected_max remains less than twice the midpoint to preserve signal range and linearity.
 
