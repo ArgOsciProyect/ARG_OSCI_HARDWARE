@@ -3,11 +3,11 @@
 **ARG_OSCI** is a compact and configurable digital oscilloscope platform, designed around the ESP32 microcontroller and capable of performing accurate signal measurements across a wide voltage range.  
 This repository contains the complete **hardware design files** for ARG_OSCI, including schematics, PCB layout, bill of materials (BOM), and 3D enclosure models.
 
-📌 This repository focuses **exclusively on the hardware**.  
+This repository focuses **exclusively on the hardware**.  
 For firmware and companion application, see:
 
-- [Firmware Repository](https://github.com/youruser/arg_osci_firmware)
-- [Desktop/Mobile Visualization Tool](https://github.com/youruser/arg_osci_app)
+- [Firmware Repository](https://github.com/ArgOsciProyect/ARG_OSCI_FIRMWARE)
+- [Desktop/Mobile Visualization Tool](https://github.com/ArgOsciProyect/ARG_OSCI_APP)
 
 ## Product Overview
 
@@ -69,7 +69,7 @@ ARG_OSCI supports two acquisition modes:
 - Suitable for general-purpose, low-frequency measurements
 
 #### External ADC (ADS7884):
-- 12-bit, high-speed SAR ADC
+- 10-bit, high-speed SAR ADC
 - Bandwidth: ~1.25 MHz
 - Offers better resolution and higher fidelity
 - **Placement Note**: The ADC must be physically close to the ESP32 to minimize signal degradation and ensure proper timing.
@@ -117,16 +117,6 @@ Estimated amplitude error vs. frequency per scale using 5% tolerance components
 
 > For higher accuracy, consider using 1% tolerance resistors and capacitors in key analog stages.
 
-## Repository Structure
-
-hardware/
-├── schematics/         # KiCad and PDF schematic files
-├── pcb/                # KiCad PCB layout + Gerber files
-├── bom/                # Bill of Materials (CSV, PDF)
-├── case3d/             # STL files for 3D-printed case
-├── doc/                # Technical documentation, notes
-└── images/             # Diagrams, plots, and real pictures
-
 ##  Design Considerations
 
 - Minimize trace length between ESP32 and ADS7884
@@ -173,4 +163,4 @@ See the LICENSE file for full terms and conditions.
 ## Acknowledgements
 
 This project is part of the **ARG_OSCI** oscilloscope visualization tool suite.  
-For the firmware and software used, visit the [ARG_OSCI_FIRMWARE]() and [ARG_OSCI_APP]() repositories.
+For the firmware and software used, visit the [ARG_OSCI_FIRMWARE](https://github.com/ArgOsciProyect/ARG_OSCI_FIRMWARE) and [ARG_OSCI_APP](https://github.com/ArgOsciProyect/ARG_OSCI_APP) repositories.
