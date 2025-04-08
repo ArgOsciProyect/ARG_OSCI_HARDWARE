@@ -6,12 +6,10 @@ This repository contains the complete **hardware design files** for ARG_OSCI, in
 📌 This repository focuses **exclusively on the hardware**.  
 For firmware and companion application, see:
 
-- 🔗 [Firmware Repository](https://github.com/youruser/arg_osci_firmware)
-- 🔗 [Desktop/Mobile Visualization Tool](https://github.com/youruser/arg_osci_app)
+- [Firmware Repository](https://github.com/youruser/arg_osci_firmware)
+- [Desktop/Mobile Visualization Tool](https://github.com/youruser/arg_osci_app)
 
----
-
-## ⚙️ Product Overview
+## Product Overview
 
 ARG_OSCI enables reliable signal acquisition through 8 selectable voltage ranges, AC/DC coupling, internal or external ADC channels, and built-in calibration utilities. Designed for educational, prototyping, and semi-professional use, it combines ease of use with signal integrity.
 
@@ -28,9 +26,7 @@ ARG_OSCI enables reliable signal acquisition through 8 selectable voltage ranges
 - LED indicator for device readiness
 - Designed with manufacturability and tolerance analysis in mind
 
----
-
-## 🔩 Hardware Implementation
+## Hardware Implementation
 
 ### Voltage Scales and Attenuation Stages
 
@@ -61,7 +57,7 @@ Coupling mode is selected via a **physical switch**:
 - **DC coupling** is the default state.
 - **AC coupling** introduces a capacitor in series to block DC components.
 
-> ⚠️ When switching to AC mode, start with the **highest voltage scale** to avoid damage from DC transients. After a few seconds, return to the appropriate scale for the AC signal of interest.
+> When switching to AC mode, start with the **highest voltage scale** to avoid damage from DC transients. After a few seconds, return to the appropriate scale for the AC signal of interest.
 
 ### Signal Conditioning and ADC Modes
 
@@ -80,9 +76,7 @@ ARG_OSCI supports two acquisition modes:
 
 Both paths include **anti-aliasing low-pass filters** designed to suppress high-frequency noise and avoid spectral folding.
 
----
-
-## 🎛️ Compensation and Calibration
+## Compensation and Calibration
 
 A **variable capacitor (trimmer)** is used to compensate for the parasitic capacitance of the signal path and switching network. Calibration ensures a flat frequency response.
 
@@ -91,19 +85,15 @@ A **variable capacitor (trimmer)** is used to compensate for the parasitic capac
 
 Although other scales can be used for compensation, the limited tuning range of the trimmer may not be sufficient for high-voltage scales.
 
----
-
-## 🔋 Power Supply
+## Power Supply
 
 - Requires a **+5V input**, supplied via USB (ESP32 devkit) or external power source.
 - Includes a **–5V inverter (LM2776)** to supply op-amps and analog stages.
 - For improved stability, an external –5V supply may be connected through a dedicated header on the PCB.
 
-> ⚠️ Power supply ripple or variation on the –5V rail can introduce baseline offset.
+> Power supply ripple or variation on the –5V rail can introduce baseline offset.
 
----
-
-## 🧾 Offset Correction
+## Offset Correction
 
 In case of unwanted signal offset due to power or analog front-end deviations:
 
