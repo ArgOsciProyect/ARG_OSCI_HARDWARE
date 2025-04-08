@@ -113,7 +113,7 @@ To calculate the corrected midpoint:
 
 $mid_{corrected} = mid_{default} + (max_{default} - mid_{default}) × \frac{V_{measuredZero}}{V_{scaleMax}}$
 
-> After adjusting corrected_mid, ensure that corrected_max remains less than twice the midpoint to preserve signal range and linearity.
+> After adjusting mid_corrected, ensure that max_corrected remains less than twice the midpoint to preserve signal range and linearity.
 
 ## Frequency Response and Expected Error
 
