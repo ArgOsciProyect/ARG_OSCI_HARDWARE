@@ -161,10 +161,14 @@ For improved accuracy, consider selecting 1% tolerance components or calibrating
 ## Images
 
 - PCB layout
+  ![Bot Side - PCB layout](images/Bot Side - PCB layout.png)
+  ![Top Side - PCB layout](images/Top Side - PCB layout.png)
 - Real device assembled
-- 3D-printed enclosure
-- Calibration procedure
-- Signal example on different scales
+  ![Argosci Through-hole prototype](images/Argosci Through-hole prototype.jpg)
+- 3D-printed case
+  ![Front-Right Isometric - Argosci divided case (3D Model)](images/Front-Right Isometric - Argosci divided case.png)
+  <!-- Calibration procedure -->
+  <!-- Signal example on different scales // Imagen del tiempo y frecuencia -->
 
 ## License
 
