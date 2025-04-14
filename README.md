@@ -123,8 +123,6 @@ An error chart is available showing the variation of gain versus frequency for e
 
 ![Simplified frequency response of the input scales](Images/Simplified_frequency_response_of_the_input_scales.jpg)
 
-For improved accuracy, consider selecting 1% tolerance components or calibrating per scale.
-
 > For higher accuracy, consider using 1% tolerance resistors and capacitors in key analog stages, especially:
 > - The main amplifier circuit
 > - The series capacitor in the second attenuation stage
@@ -161,12 +159,19 @@ For improved accuracy, consider selecting 1% tolerance components or calibrating
 ## Images
 
 - PCB layout
+  
   ![Bot Side - PCB layout](Images/Bot_Side-PCB_layout.png)
+  
   ![Top Side - PCB layout](Images/Top_Side-PCB_layout.png)
-- Real device assembled
+  
+- Real device assembled (prototype)
+  
   ![Argosci Through-hole prototype](Images/Argosci_Through-hole_prototype.jpg)
+  
 - 3D-printed case
+  
   ![Front-Right Isometric - Argosci divided case (3D Model)](Images/Front-Right_Isometric-Argosci_divided_case.png)
+  
   <!-- Calibration procedure -->
   <!-- Signal example on different scales // Imagen del tiempo y frecuencia -->
 
