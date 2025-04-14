@@ -161,42 +161,30 @@ An error chart is available showing the variation of gain versus frequency for e
 
 - PCB layout
   
-  ![Bot Side - PCB layout](Images/Bot_Side-PCB_layout.png)
+  ![Bot Side - PCB layout](Images/PCB_layout/Bot_Side-PCB_layout.png)
   *Bot Side - PCB layout*
   
-  ![Top Side - PCB layout](Images/Top_Side-PCB_layout.png)
+  ![Top Side - PCB layout](Images/PCB_layout/Top_Side-PCB_layout.png)
   *Top Side - PCB layout*
 
 - Argosci PCB
 
-  ![Bot Side - Argosci PCB](Images/Bot_Side-Argosci_PCB.png)
-  *Bot Side - Argosci PCB*
-
-  ![Top Side - Argosci PCB](Images/Top_Side-Argosci_PCB.png)
-  *Top Side - Argosci PCB*
-
-  ![Front-Right Isometric - Argosci PCB](Images/Front-Right_Isometric-Argosci_PCB.png)
+  ![Front-Right Isometric - Argosci PCB](Images/Argosci_PCB/Front-Right_Isometric-Argosci_PCB.png)
   *Front-Right Isometric - Argosci PCB*
 
 - 3D Model Argosci PCB and case
 
-  ![Front-Right Isometric - Argosci PCB and case](Images/Front-Right_Isometric-Argosci_PCB_and_case.png)
-  *Front-Right Isometric - Argosci PCB and case*
-
-  ![Rear-Left Isometric - Argosci PCB and case](Images/Rear-Left_Isometric-Argosci_PCB_and_case.png)
+  ![Rear-Left Isometric - Argosci PCB and case](Images/3D_Model_Argosci_PCB_and_case/Rear-Left_Isometric-Argosci_PCB_and_case.png)
   *Rear-Left Isometric - Argosci PCB and case*
-
-  ![Top Side - Argosci PCB and case](Images/Top_Side-Argosci_PCB_and_case.png)
-  *Top Side - Argosci PCB and case*
   
 - Real device assembled
   
-  ![Argosci Through-hole prototype](Images/Argosci_Through-hole_prototype.jpg)
+  ![Argosci Through-hole prototype](Images/Real_device_assembled/Argosci_Through-hole_prototype.jpg)
   *Argosci Through-hole prototype*
   
 - 3D-printed case
   
-  ![Front-Right Isometric - Argosci divided case (3D Model)](Images/Front-Right_Isometric-Argosci_divided_case.png)
+  ![Front-Right Isometric - Argosci divided case (3D Model)](Images/3D-printed_case/Front-Right_Isometric-Argosci_divided_case.png)
   *Front-Right Isometric - Argosci divided case (3D Model)*
 
 
