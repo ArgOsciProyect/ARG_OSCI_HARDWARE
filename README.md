@@ -1,5 +1,7 @@
 # ARG_OSCI_HARDWARE
 
+[![License: CERN-OHL-W](https://img.shields.io/badge/License-CERN--OHL--W--v2-blue.svg)](https://gitlab.com/ohwr/project/cernohl/-/wikis/home)
+
 **ARG_OSCI** is a compact and configurable digital oscilloscope platform, designed around the ESP32 microcontroller and capable of performing accurate signal measurements across a wide voltage range.  
 This repository contains the complete **hardware design files** for ARG_OSCI, including schematics, PCB layout, bill of materials (BOM), and 3D enclosure models.
 
@@ -193,8 +195,7 @@ An error chart is available showing the variation of gain versus frequency for e
 
 ## License
 
-This project is licensed under ?.
-See the LICENSE file for full terms and conditions.
+This hardware project is licensed under the [CERN-OHL-W v2](https://gitlab.com/ohwr/project/cernohl/-/wikis/home).
 
 ## Acknowledgements
 
