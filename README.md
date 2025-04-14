@@ -166,8 +166,30 @@ An error chart is available showing the variation of gain versus frequency for e
   
   ![Top Side - PCB layout](Images/Top_Side-PCB_layout.png)
   *Top Side - PCB layout*
+
+- Argosci PCB
+
+  ![Bot Side - Argosci PCB](Images/Bot_Side-Argosci_PCB.png)
+  *Bot Side - Argosci PCB*
+
+  ![Top Side - Argosci PCB](Images/Top_Side-Argosci_PCB.png)
+  *Top Side - Argosci PCB*
+
+  ![Front-Right Isometric - Argosci PCB](Images/Front-Right_Isometric-Argosci_PCB.png)
+  *Front-Right Isometric - Argosci PCB*
+
+- 3D Model Argosci PCB and case
+
+  ![Front-Right Isometric - Argosci PCB and case](Images/Front-Right_Isometric-Argosci_PCB_and_case.png)
+  *Front-Right Isometric - Argosci PCB and case*
+
+  ![Rear-Left Isometric - Argosci PCB and case](Images/Rear-Left_Isometric-Argosci_PCB_and_case.png)
+  *Rear-Left Isometric - Argosci PCB and case*
+
+  ![Top Side - Argosci PCB and case](Images/Top_Side-Argosci_PCB_and_case.png)
+  *Top Side - Argosci PCB and case*
   
-- Real device assembled (prototype)
+- Real device assembled
   
   ![Argosci Through-hole prototype](Images/Argosci_Through-hole_prototype.jpg)
   *Argosci Through-hole prototype*
@@ -176,7 +198,8 @@ An error chart is available showing the variation of gain versus frequency for e
   
   ![Front-Right Isometric - Argosci divided case (3D Model)](Images/Front-Right_Isometric-Argosci_divided_case.png)
   *Front-Right Isometric - Argosci divided case (3D Model)*
-  
+
+
   <!-- Calibration procedure -->
   <!-- Signal example on different scales // Imagen del tiempo y frecuencia -->
 
