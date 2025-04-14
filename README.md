@@ -121,7 +121,7 @@ Due to component tolerances (~5%), the analog front-end may present small deviat
 
 An error chart is available showing the variation of gain versus frequency for each scale.
 
-👉 **[Insert chart image here]**
+![Simplified frequency response of the input scales](SimplifiedFrequencyResponseOfTheInputScales.jpg)
 
 For improved accuracy, consider selecting 1% tolerance components or calibrating per scale.
 
@@ -161,12 +161,12 @@ For improved accuracy, consider selecting 1% tolerance components or calibrating
 ## Images
 
 - PCB layout
-  ![Bot Side - PCB layout](images/Bot Side - PCB layout.png)
-  ![Top Side - PCB layout](images/Top Side - PCB layout.png)
+  ![Bot Side - PCB layout](images/BotSide-PCBlayout.png)
+  ![Top Side - PCB layout](images/TopSide-PCBlayout.png)
 - Real device assembled
-  ![Argosci Through-hole prototype](images/Argosci Through-hole prototype.jpg)
+  ![Argosci Through-hole prototype](images/ArgosciThrough-holeprototype.jpg)
 - 3D-printed case
-  ![Front-Right Isometric - Argosci divided case (3D Model)](images/Front-Right Isometric - Argosci divided case.png)
+  ![Front-Right Isometric - Argosci divided case (3D Model)](images/Front-RightIsometric-Argoscidividedcase.png)
   <!-- Calibration procedure -->
   <!-- Signal example on different scales // Imagen del tiempo y frecuencia -->
 
