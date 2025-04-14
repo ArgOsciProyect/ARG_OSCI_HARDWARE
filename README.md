@@ -122,6 +122,7 @@ Due to component tolerances (~5%), the analog front-end may present small deviat
 An error chart is available showing the variation of gain versus frequency for each scale.
 
 ![Simplified frequency response of the input scales](Images/Simplified_frequency_response_of_the_input_scales.jpg)
+*Simplified frequency response of the input scales*
 
 > For higher accuracy, consider using 1% tolerance resistors and capacitors in key analog stages, especially:
 > - The main amplifier circuit
@@ -161,16 +162,20 @@ An error chart is available showing the variation of gain versus frequency for e
 - PCB layout
   
   ![Bot Side - PCB layout](Images/Bot_Side-PCB_layout.png)
+  *Bot Side - PCB layout*
   
   ![Top Side - PCB layout](Images/Top_Side-PCB_layout.png)
+  *Top Side - PCB layout*
   
 - Real device assembled (prototype)
   
   ![Argosci Through-hole prototype](Images/Argosci_Through-hole_prototype.jpg)
+  *Argosci Through-hole prototype*
   
 - 3D-printed case
   
   ![Front-Right Isometric - Argosci divided case (3D Model)](Images/Front-Right_Isometric-Argosci_divided_case.png)
+  *Front-Right Isometric - Argosci divided case (3D Model)*
   
   <!-- Calibration procedure -->
   <!-- Signal example on different scales // Imagen del tiempo y frecuencia -->
