@@ -39,11 +39,11 @@
 
 This document describes how to implement the ARG_OSCI hardware, including the rationale behind each design block, construction notes, and suggestions for further development. For usage instructions, refer to the user manual.
 
-![Argosci Schematics](Schematics\Schematics_page-1.jpg)
+![Argosci Schematics](Schematics/Schematics_page-1.jpg)
   *Argosci Schematics*
-![Argosci complementary circuits](Schematics\Schematics_page-2.jpg)
+![Argosci complementary circuits](Schematics/Schematics_page-2.jpg)
   *Argosci complementary circuits*
-![Argosci ESP32 pinout conections](Schematics\Schematics_page-3.jpg)
+![Argosci ESP32 pinout conections](Schematics/Schematics_page-3.jpg)
   *Argosci ESP32 pinout conections*
 
 ## Design Overview
