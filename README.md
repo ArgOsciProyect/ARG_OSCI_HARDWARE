@@ -40,11 +40,8 @@
 This document describes how to implement the ARG_OSCI hardware, including the rationale behind each design block, construction notes, and suggestions for further development. For usage instructions, refer to the user manual.
 
 ![Argosci Schematics](Schematics/Schematics_page-1.jpg)
-  *Argosci Schematics*
 ![Argosci complementary circuits](Schematics/Schematics_page-2.jpg)
-  *Argosci complementary circuits*
 ![Argosci ESP32 pinout conections](Schematics/Schematics_page-3.jpg)
-  *Argosci ESP32 pinout conections*
 
 ## Design Overview
 
@@ -70,10 +67,9 @@ The hardware is divided into several functional blocks:
 
 The input network provides both AC and DC coupling paths. The AC coupling path includes a series capacitor (150 nF), while the DC path is direct. The 150 nF capacitor must be rated for at least 500V to safely block DC voltages up to the device's maximum scale (±400V). The capacitor value was selected to achieve a cutoff frequency below 1 Hz, considering that the input impedance is always greater than 1MΩ (typically 1070 MΩ to 1500 MΩ, depending on the attenuation setting). This configuration forms a high-pass filter and ensures accurate measurement of AC signals above 1Hz, with a settling time of approximately 1 second after switching to AC coupling.
 
-> **Expansion note:** You may add a schematic snippet showing the AC/DC coupling switch and the series capacitor, as well as a graph of the high-pass filter response.
+> **Expansion note:** You may add a graph of the high-pass filter response.
 
-> **Image suggestion:** Schematic snippet of the input protection and connector section.
-> **Expansion note:** Add details about input protection components and their ratings.
+![Argosci ESP32 pinout conections](Schematics/Snippets/Input_network.jpg)
 
 ### 2. Attenuation Networks
 #### A/B Attenuation Network
@@ -82,8 +78,7 @@ Provides coarse attenuation (e.g., ×40) using precision resistor dividers and m
 #### 1/2/3/4 Attenuation Network
 Provides fine attenuation (e.g., ×2.4), yielding eight selectable voltage ranges in combination with the A/B network. This stage uses a 2P4T selector switch.
 
-> **Image suggestion:** Table or diagram showing attenuation combinations and resulting voltage ranges.
-> **Expansion note:** Include resistor values and switch types used.
+![Argosci ESP32 pinout conections](Schematics/Snippets/Attenuation_stage.jpg)
 
 #### Attenuation Stage Details
 
