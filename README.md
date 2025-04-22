@@ -1,203 +1,274 @@
-# ARG_OSCI_HARDWARE
+# ARG_OSCI Hardware Implementation Guide
 
 [![License: CERN-OHL-W](https://img.shields.io/badge/License-CERN--OHL--W--v2-blue.svg)](https://gitlab.com/ohwr/project/cernohl/-/wikis/home)
 
-**ARG_OSCI** is a compact and configurable digital oscilloscope platform, designed around the ESP32 microcontroller and capable of performing accurate signal measurements across a wide voltage range.  
-This repository contains the complete **hardware design files** for ARG_OSCI, including schematics, PCB layout, bill of materials (BOM), and 3D enclosure models.
+**ARG_OSCI** is an open-source portable oscilloscope platform. This document details the technical implementation of the hardware, focusing on design decisions, construction, and improvement opportunities. It is intended for engineers and advanced users interested in building or modifying the device.
 
-This repository focuses **exclusively on the hardware**.  
-For firmware and companion application, see:
+---
 
-- [Firmware Repository](https://github.com/ArgOsciProyect/ARG_OSCI_FIRMWARE)
-- [Desktop/Mobile Visualization Tool](https://github.com/ArgOsciProyect/ARG_OSCI_APP)
+## Table of Contents
+- [Introduction](#introduction)
+- [Design Overview](#design-overview)
+- [Implementation Details](#implementation-details)
+  - [Input Network](#1-input-network)
+  - [Attenuation Networks](#2-attenuation-networks)
+  - [Amplification Stage](#3-amplification-stage)
+  - [Signal Filtering](#4-signal-filtering)
+  - [External ADC Circuit](#5-external-adc-circuit)
+  - [Transient Comparator Circuit](#6-transient-comparator-circuit)
+  - [Calibration Square Wave Generator](#7-calibration-square-wave-generator)
+  - [Connection Status LED Circuit](#8-connection-status-led-circuit)
+  - [Power Supply](#9-power-supply)
+  - [ESP32 Connectivity and Decoupling](#10-esp32-connectivity-and-decoupling)
+- [Design Files and Resources](#design-files-and-resources)
+- [Construction and Improvement Notes](#construction-and-improvement-notes)
+  - [Assembly and Component Selection](#assembly-and-component-selection)
+  - [Protection and Safety](#protection-and-safety)
+  - [Optional Simplifications](#optional-simplifications)
+  - [Design and Layout](#design-and-layout)
+- [Pending Tasks and Recommendations](#pending-tasks-and-recommendations)
+  - [Technical Improvements](#technical-improvements)
+  - [Documentation and Usability](#documentation-and-usability)
+  - [Future Development](#future-development)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
 
-## Product Overview
+---
 
-ARG_OSCI enables reliable signal acquisition through 8 selectable voltage ranges, AC/DC coupling, internal or external ADC channels, and built-in calibration utilities. Designed for educational, prototyping, and semi-professional use, it combines ease of use with signal integrity.
+## Introduction
 
-**Key Features:**
+This document describes how to implement the ARG_OSCI hardware, including the rationale behind each design block, construction notes, and suggestions for further development. For usage instructions, refer to the user manual.
 
-- 8 voltage scales ranging from ±0.6V to ±400V
-- AC/DC coupling switchable via physical toggle
-- Two-stage analog attenuation network
-- Internal ESP32 ADC (120 kHz BW) or external ADS7884 ADC (1.25 MHz BW)
-- Anti-aliasing filters on both acquisition paths
-- Built-in 1kHz test signal for compensation
-- ±5V analog supply with optional external –5V input
-- Physical switches for input configuration
-- LED indicator for device readiness
-- Designed with manufacturability and tolerance analysis in mind
-
-## Hardware Implementation
-
-### Voltage Scales and Attenuation Stages
-
-Signal scaling is achieved through **two cascaded attenuation stages** controlled via mechanical switches:
-
-- **Stage A/B**: Coarse attenuation (~×40)
-- **Stage 1–4**: Fine attenuation (~×2.4)
-
-This configuration yields 8 total scales:
-
-| Scale | Expected Range |
-|-------|----------------|
-| A1    | ±0.6V          |
-| A2    | ±1.5V          |
-| A3    | ±4V            |
-| A4    | ±10V           |
-| B1    | ±24V           |
-| B2    | ±60V           |
-| B3    | ±150V          |
-| B4    | ±400V          |
-
-Switches allow quick manual selection of attenuation paths, providing hardware-level reliability and simplicity.
-
-### AC/DC Coupling
-
-Coupling mode is selected via a **physical switch**:
-
-- **DC coupling** is the default state.
-- **AC coupling** introduces a capacitor in series to block DC components.
-
-> When switching to AC mode, start with the **highest voltage scale** to avoid damage from DC transients. After a few seconds, return to the appropriate scale for the AC signal of interest.
-
-### Signal Conditioning and ADC Modes
-
-ARG_OSCI supports two acquisition modes:
-
-#### Internal ADC (ESP32):
-- Integrated into the ESP32 microcontroller
-- Bandwidth: ~120 kHz
-- Suitable for general-purpose, low-frequency measurements
-- May present non-linearities depending on configuration and reference voltage
-
-#### External ADC (ADS7884):
-- 10-bit, high-speed SAR ADC
-- Bandwidth: ~1.25 MHz
-- Communicates with the ESP32 via SPI
-- Offers better resolution and higher fidelity
-- **Placement Note**: The ADC must be physically close to the ESP32 to minimize signal degradation and ensure proper timing.
-
-Both paths include **anti-aliasing low-pass filters** designed to suppress high-frequency noise and avoid spectral folding.
-
-## Compensation and Calibration
-
-A **variable capacitor (trimmer)** is used to compensate for the parasitic capacitance of the signal path and switching network. Calibration ensures a flat frequency response.
-
-- Calibration is most effective on the **A2 scale** (±1.5V), where the system is most sensitive to capacitance variation.
-- A **1kHz test signal** is built into the device for easy calibration by visualizing signal integrity.
-
-Although other scales can be used for compensation, the limited tuning range of the trimmer may not be sufficient for high-voltage scales.
-
-## Power Supply
-
-- Device powered via 5V USB or external 5V supply
-- –5V rail is generated internally via LM2776 inverter
-- For improved accuracy and reduced offset, a stable external –5V supply may be used instead, via a dedicated header
-- The –5V rail shows **sensitivity to voltage level and quality**, which may introduce noise or offset in sensitive measurements
-
-> Power supply ripple or variation on the –5V rail can introduce baseline offset.
-
-## Offset Correction
-
-In case of unwanted signal offset due to analog front-end or supply variations:
-
-1. Set the probe to the highest voltage scale.
-2. Connect the input to GND.
-3. Observe the measured zero level on the application.
-4. Apply compensation in firmware by adjusting the ADC's midpoint reference.
-
-The firmware exposes two calibration variables:
-- **Default midpoint binary value** (e.g., 512 for 10-bit ADC)
-- **Default maximum binary value** (1023 for 10-bit ADC)
-
-To calculate the corrected midpoint:
-
-$mid_{corrected} = mid_{default} + (max_{default} - mid_{default}) × \frac{V_{measuredZero}}{V_{scaleMax}}$
-
-> After adjusting mid_corrected, ensure that max_corrected remains less than twice the midpoint to preserve signal range and linearity.
-
-## Frequency Response and Expected Error
-
-Due to component tolerances (~5%), the analog front-end may present small deviations in frequency response.
-
-An error chart is available showing the variation of gain versus frequency for each scale.
-
-![Simplified frequency response of the input scales](Images/Simplified_frequency_response_of_the_input_scales.jpg)
-*Simplified frequency response of the input scales*
-
-> For higher accuracy, consider using 1% tolerance resistors and capacitors in key analog stages, especially:
-> - The main amplifier circuit
-> - The series capacitor in the second attenuation stage
-> - The 40x attenuator in the first stage
-
-##  Design Considerations
-
-- Minimize trace length between ESP32 and ADS7884
-- Shield analog paths where possible
-- Avoid switching between scales during active sampling
-- Always verify input voltage before scale selection
-
-## Functional Behavior
-
-- Manual selection of input scale and coupling
-- Visual feedback via onboard LED when device is ready to connect
-- Fixed acquisition mode (internal or external) selected at startup
-- Quick calibration via built-in test signal and trimmer
-- Real-time data streaming to companion software
-
-## Known Issues & Future Improvements
-
-### Known Issues
-
-- Limited trimmer range limits compensation on high voltage scales
-- –5V rail may introduce noise or offset if not externally regulated
-
-### Future Improvements
-
-- Firmware-based automatic zero-level calibration
-- Modularize front-end for multi-channel acquisition
-- Improve PCB layout for EMC and signal integrity
-
-## Images
-
-- PCB layout
-  
-  ![Bot Side - PCB layout](Images/PCB_layout/Bot_Side-PCB_layout.png)
-  *Bot Side - PCB layout*
-  
-  ![Top Side - PCB layout](Images/PCB_layout/Top_Side-PCB_layout.png)
-  *Top Side - PCB layout*
-
-- Argosci PCB
-
-  ![Front-Right Isometric - Argosci PCB](Images/Argosci_PCB/Front-Right_Isometric-Argosci_PCB.png)
-  *Front-Right Isometric - Argosci PCB*
-
-- 3D Model Argosci PCB and case
-
-  ![Rear-Left Isometric - Argosci PCB and case](Images/3D_Model_Argosci_PCB_and_case/Rear-Left_Isometric-Argosci_PCB_and_case.png)
-  *Rear-Left Isometric - Argosci PCB and case*
-  
-- Real device assembled
-  
-  ![Argosci Through-hole prototype](Images/Real_device_assembled/Argosci_Through-hole_prototype.jpg)
-  *Argosci Through-hole prototype*
-  
-- 3D-printed case
-  
-  ![Front-Right Isometric - Argosci divided case (3D Model)](Images/3D-printed_case/Front-Right_Isometric-Argosci_divided_case.png)
-  *Front-Right Isometric - Argosci divided case (3D Model)*
+> **Image suggestion:** Block diagram of the hardware architecture (input, attenuation, amplification, filtering, ADC, ESP32, power, etc.)
 
 
-  <!-- Calibration procedure -->
-  <!-- Signal example on different scales // Imagen del tiempo y frecuencia -->
+## Design Overview
+
+The hardware is divided into several functional blocks:
+
+- Input Network
+- Attenuation Networks
+- Attenuation Stage Details
+- Amplification Stage
+- Signal Filtering
+- External ADC Circuit
+- Transient Comparator Circuit
+- Calibration Square Wave Generator
+- Connection Status LED Circuit
+- Power Supply
+- ESP32 Connectivity and Decoupling
+
+---
+
+## Implementation Details
+
+### 1. Input Network
+
+The input network provides both AC and DC coupling paths. The AC coupling path includes a series capacitor (150 nF), while the DC path is direct. The 150 nF capacitor must be rated for at least 500V to safely block DC voltages up to the device's maximum scale (±400V). The capacitor value was selected to achieve a cutoff frequency below 1 Hz, considering that the input impedance is always greater than 1MΩ (typically 1070 MΩ to 1500 MΩ, depending on the attenuation setting). This configuration forms a high-pass filter and ensures accurate measurement of AC signals above 1Hz, with a settling time of approximately 1 second after switching to AC coupling.
+
+> **Expansion note:** You may add a schematic snippet showing the AC/DC coupling switch and the series capacitor, as well as a graph of the high-pass filter response.
+
+> **Image suggestion:** Schematic snippet of the input protection and connector section.
+> **Expansion note:** Add details about input protection components and their ratings.
+
+### 2. Attenuation Networks
+#### A/B Attenuation Network
+Provides coarse attenuation (e.g., ×40) using precision resistor dividers and mechanical switches (2P2T selector switch).
+
+#### 1/2/3/4 Attenuation Network
+Provides fine attenuation (e.g., ×2.4), yielding eight selectable voltage ranges in combination with the A/B network. This stage uses a 2P4T selector switch.
+
+> **Image suggestion:** Table or diagram showing attenuation combinations and resulting voltage ranges.
+> **Expansion note:** Include resistor values and switch types used.
+
+#### Attenuation Stage Details
+
+The attenuation stage is designed to maintain an input impedance greater than 1 MΩ. To compensate for the effects of parasitic capacitances —particularly those introduced by the amplifier— capacitors are included in the attenuation network. The total input capacitance of the device is kept below 20pF. Components are selected with 5% tolerance (1% for higher precision if desired), resistors are rated at 1/4 W, and capacitors are rated for at least 25 V, except for the series capacitor in stage B, which must withstand up to 500 V to safely attenuate signals up to 400V when required.
+
+A trimmer capacitor is placed at the amplifier input to allow fine adjustment and compensate for variations in the amplifier’s input capacitance and other component tolerances. The trimmer is adjustable up to 20pF, with a minimum value of approximately 4.2pF, ensuring a flat frequency response across the device’s bandwidth. The most sensitive stage to these variations is A2, as it has the smallest capacitance in parallel with the amplifier, making it more susceptible to frequency response deviations.
+
+### 3. Amplification Stage
+
+The amplification stage uses the TL082 operational amplifier, chosen for its suitable bandwidth, slew rate, operating ranges, low associated errors, low cost, and ease of sourcing. Two feedback configurations are implemented: the inverting configuration is used to set the signal offset (centering it within the ADC input range using the –5V rail), while the non-inverting configuration amplifies the measured signal to maximize the ADCs' dynamic range.
+
+To minimize errors due to input bias currents, high-value resistors are used in the feedback network. This necessitated the inclusion of a capacitive compensation network (without the need for a trimmer in this case).
+
+> **Image suggestion:** Schematic of the amplifier stage, highlighting feedback networks and compensation capacitors.
+> **Expansion note:** Discuss op-amp selection criteria, possible improvements, and test results.
+
+#### Design Considerations and Potential Improvements
+- **Resistor Value Optimization:** It is being considered to reduce the values of the feedback resistors, as the error from bias currents is relatively low. Lowering these values could allow the removal of the compensation network, though a capacitor should still be retained to filter noise from the –5V supply. This change would increase the device's power consumption and should be evaluated accordingly.
+- **Negative Voltage Limiter:** It is recommended to add a negative voltage limiter at the amplifier output. While the amplifier typically saturates at positive voltages (not damaging the ADCs), under certain conditions it may output voltages below 0V, which could potentially harm the ADCs.
+
+### 4. Signal Filtering
+
+A conventional first-order RC low-pass filter is used for signal filtering. The filters are designed based on the input capacitance of the ADCs used in each case. Two separate filter networks are implemented, allowing the user to select which ADC to use. For each network, the cutoff frequency is set to the maximum frequency that the device can accurately measure with the selected ADC.
+
+> **Image suggestion:** Circuit diagram of the RC filter networks for both ADCs.
+
+#### Design Considerations and Potential Improvements
+- **Filter Effectiveness Review:** It has been observed that at higher frequencies, aliasing phenomena may occur, distorting the measured signal and its frequency spectrum. A review of the filter effectiveness is recommended, and higher-order filters may be considered to improve performance and reduce aliasing effects.
+
+### 5. External ADC Circuit
+
+The external ADC (ADS7884) circuit is designed following the manufacturer's recommendations. For SPI communication with the ESP32, the layout ensures physical proximity between the ADS7884 and the relevant ESP32 pins, with all SPI traces kept as short and equal in length as possible. These measures are critical to maintain signal integrity at the 40 MHz communication frequency.
+
+The ADS7884 is powered by the 3.3 V supply provided by the ESP32's onboard regulator, which also serves as the ADC's voltage reference. The stability of this voltage is crucial for measurement accuracy. To stabilize the supply, an RC network is implemented, consisting of the manufacturer-recommended capacitors and a 100 Ω resistor (subject to further review), in line with the recommended power supply impedance.
+
+> **Image suggestion:** PCB layout close-up showing the ADS7884, SPI traces, and power supply filtering network.
+
+#### Design Considerations and Potential Improvements
+- **Dedicated Voltage Regulator:** It is recommended to consider adding a dedicated voltage regulator for the ADC to ensure a stable reference voltage, independent of noise from the ESP32 supply.
+- **Power Supply Filtering Review:** The value of the series resistor and the overall RC network should be reviewed and optimized to further improve voltage stability and measurement quality.
+- **EMI/Environmental Noise Shielding:** The ADC has shown sensitivity to environmental interference and noise. It is recommended to implement shielding methods on the PCB or enclosure to reduce these effects and improve measurement reliability.
+
+### 6. Transient Comparator Circuit
+
+The transient comparator circuit enables the detection and reading of aperiodic (transient) signals. It consists of three main parts, each with a specific function:
+
+#### RC Filter
+The RC filter stabilizes a PWM signal generated by the ESP32. This PWM signal is set to have an average voltage equal to the trigger level selected in the application for signal visualization. The resulting DC voltage serves as the reference level for the comparator.
+
+#### Comparator (TL082)
+The remaining amplifier in the TL082 IC is configured as a comparator. It compares the measured signal to the reference voltage from the RC filter. When the input signal exceeds the trigger threshold, the comparator switches its output state. This transition is recognized as a transient event, which is then communicated to the application for display.
+
+#### Digital Signal Adapter
+The digital adapter converts the output of the comparator to voltage levels that are safe and readable by the ESP32: 3.3 V (minimum 2.475 V) for logic high and 0 V (maximum 0.825 V) for logic low. This is achieved using a BAT54 (or BAT85) diode in combination with a resistive divider, which limits current and ensures the output is pulled close to 0 V when the comparator switches to its negative output.
+
+> **Image suggestion:** Schematic showing the RC filter, comparator, and digital adapter stages.
+> **Expansion note:** Add timing diagrams or oscilloscope captures of transient detection events.
+
+### 7. Calibration Square Wave Generator
+
+The calibration circuit operates using a 1 kHz square wave signal provided by the ESP32, with levels ranging from 0 V to 3.3 V. This signal is attenuated to approximately 30% of its original amplitude using a resistive divider (15 kΩ and 6.8 kΩ), resulting in a safe level for the A2 stage, which is particularly sensitive to parasitic capacitance. The attenuated signal is used specifically to fine-tune the trimmer capacitor in the A2 stage. The resistor values are selected to minimize current draw and reduce loading on the ESP32 output.
+
+> **Image suggestion:** Schematic of the calibration signal generator and attenuation network.
+
+### 8. Connection Status LED Circuit
+
+The purpose of this LED is to indicate when the ESP32 board is ready to accept WiFi connections and begin operation. While the LED is off, the device is generating the access point. When the LED turns on, it signals that the user can connect to the device.
+
+A 5 mm LED is used to increase visibility. A 270 Ω resistor is placed in series, but this value can be adjusted if needed—for example, using a lower resistance to increase brightness. The LED size and resistor value can be modified according to specific design preferences.
+
+> **Image suggestion:** Photo of the assembled board with the status LED highlighted.
+
+### 9. Power Supply
+
+The power supply system is designed to provide both +5V and –5V rails required by the analog and digital circuitry:
+
+#### +5V Supply
+- The +5V supply is sourced from the ESP32's 5V pin, which itself is powered via the USB port.
+- A diode-capacitor circuit is used between the USB input and the 5V rail. The presence of the diode causes a slight voltage drop below 5V. While this does not affect the operation of the operational amplifiers, it does slightly shift the voltage levels in the comparator circuit and significantly impacts the generation of the –5V rail via the LM2776.
+
+#### –5V Supply
+- The –5V rail is generated using the LM2776 charge pump IC, implemented according to the manufacturer's recommendations.
+- Stabilization and voltage generation capacitors are placed as close as possible to the LM2776 to ensure proper operation and minimize noise.
+- Since the LM2776 inverts and slightly alters the positive supply voltage, software and firmware corrections are applied to compensate for any offset shifts that could affect ADC readings.
+- There is a known issue with the LM2776 operation that requires further review to ensure reliable negative voltage generation.
+
+#### External Power Option
+- The PCB provides access to power supply pins, allowing the circuit to be powered externally. This enables bypassing the micro USB and ESP32 for power delivery, and allows for a higher-quality negative voltage supply if needed.
+
+> **Expansion note:** Add a schematic of the power supply section, including USB input, diode-capacitor circuit, LM2776, and external power connectors.
+> **Expansion note:** Document troubleshooting steps and test results for the LM2776 issue.
+
+### 10. ESP32 Connectivity and Decoupling
+
+The current design uses the Nodemcu-32s development board as the core controller. Key considerations for integrating the ESP32 with the rest of the circuit include:
+
+- **Connection to ADS7884:** Special care is taken with the physical connection between the ESP32 and the ADS7884 ADC, as previously described. SPI traces should be as short and direct as possible to ensure reliable high-speed communication.
+- **MCPWM and SPI Synchronization Pins:** The MCPWM and SPI libraries both use GPIO2 and GPIO15 for synchronization. These pins must be routed with minimal length to reduce latency and signal integrity issues.
+- **Power Supply Decoupling:** A 100 nF capacitor is added at the ESP32's 5 V pin to stabilize the supply voltage used by the rest of the circuit.
+- **Socketed Mounting:** The ESP32 is connected to the main board via a socket. This allows for easy removal when flashing new firmware, as the board should not be connected to the rest of the circuit during programming.
+
+#### Future Improvements
+- **Direct Microcontroller Integration:** There are plans to redesign the hardware to use only the ESP32 microcontroller chip, eliminating the full devkit. This would:
+  - Reduce the overall PCB size
+  - Simplify flashing and programming
+  - Improve signal routing and reduce parasitic effects
+  - Allow for more flexible and compact enclosure designs
+  - Potentially reduce cost and improve reliability
+
+> **Image suggestion:** PCB layout showing ESP32 socket, decoupling capacitor, and short SPI/MCPWM traces.
+> **Expansion note:** Add pinout diagrams and detailed connection tables for reference.
+
+---
+
+## Design Files and Resources
+- **Schematics:** Complete circuit diagrams for all hardware blocks. Located in the `Schematics` folder.
+- **PCB Layout:** Proposed PCB design with Gerber files for manufacturing. Located in the `PCB` folder.
+- **BOM:** Bill of Materials with recommended part numbers and tolerances. Available in the `BOM` folder.
+- **3D Enclosure:** Printable STL files for the device enclosure. Available in the `Case3D` folder.
+- **LTspice Simulations:** Circuit simulation files for analysis and design validation. Recommended folder name: `LTspice_Simulations`.
+
+> **Additional files:**
+- Technical documentation and manuals in the `Doc` folder.
+- Images and diagrams in the `Images` folder.
+
+> **Note:** If the repository is published online, it is recommended to add direct download links to each relevant file or folder.
+
+---
+
+## Construction and Improvement Notes
+
+### Assembly and Component Selection
+- For best measurement accuracy, use 1% tolerance components in the following order of priority:
+  1. Amplification circuit (affects all scales and frequencies)
+  2. A/B attenuation circuit (affects upper half of scales, 40x attenuation)
+  3. Series capacitor in the 1/2/3/4 attenuation circuit (affects all scales at high frequency)
+  4. 1/2/3/4 attenuation circuit (affects all scales)
+  5. Input filters to the ADCs
+  6. Remaining components
+- Both the internal ESP32 ADC and the external ADC present nonlinearities, though the external ADC is more accurate.
+- Pay special attention to the correct wiring of the attenuation scales and selector logic during assembly. Errors here can damage multiple components.
+
+### Protection and Safety
+- It is strongly recommended to add fuse-varistor protection circuits to safeguard the integrity of the attenuation stages:
+  - 12.5 V varistor in stage A
+  - 500 V varistor in stage B
+  - 5 V varistor in stage 1 (direct path to the op-amp)
+
+Note: The current PCB does not include footprints for these components.
+
+### Optional Simplifications
+- The following stages can be omitted to reduce PCB size, simplify construction, or save on materials:
+  - B attenuation stage (if high-voltage operation is not required)
+  - AC/DC selection stage
+  - Single-shot mode stage
+  - ADC input filter for any unused ADC
+- If the LM2776 IC is unavailable, substitute with a similar IC (ensure correct pinout) or provide a negative voltage rail externally.
+
+### Design and Layout
+- PCB layout can be further optimized for EMC and signal integrity.
+- The enclosure design may be adapted or improved for robustness.
+- More compact PCB designs are planned, including protection features and direct microcontroller integration (without the devkit).
+
+---
+
+## Pending Tasks and Recommendations
+
+### Technical Improvements
+- Complete a detailed error analysis and document the results for all acquisition paths.
+- Review and improve the negative power supply design, including alternatives to the LM2776.
+- Consider implementing higher-order input filters to improve signal fidelity and reduce aliasing.
+- Evaluate and document the effectiveness of protection circuits and their impact on measurement reliability.
+
+### Documentation and Usability
+- Provide step-by-step assembly instructions and detailed test procedures.
+- Add troubleshooting and known issues sections to assist users during assembly and operation.
+
+### Future Development
+- Develop and release more compact PCB designs with integrated protections and without the devkit.
+- Explore the possibility of omitting or modularizing optional stages for different use cases.
+
+---
 
 ## License
 
 This hardware project is licensed under the [CERN-OHL-W v2](https://gitlab.com/ohwr/project/cernohl/-/wikis/home).
 
+---
+
 ## Acknowledgements
 
-This project is part of the **ARG_OSCI** oscilloscope visualization tool suite.  
-For the firmware and software used, visit the [ARG_OSCI_FIRMWARE](https://github.com/ArgOsciProyect/ARG_OSCI_FIRMWARE) and [ARG_OSCI_APP](https://github.com/ArgOsciProyect/ARG_OSCI_APP) repositories.
+This project is part of the **ARG_OSCI** oscilloscope visualization tool suite. For firmware and software, visit the [ARG_OSCI_FIRMWARE](https://github.com/ArgOsciProyect/ARG_OSCI_FIRMWARE) and [ARG_OSCI_APP](https://github.com/ArgOsciProyect/ARG_OSCI_APP) repositories.
