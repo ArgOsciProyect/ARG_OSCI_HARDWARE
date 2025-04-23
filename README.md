@@ -189,6 +189,8 @@ The current design uses the Nodemcu-32s development board as the core controller
 - **Power Supply Decoupling:** A 100 nF capacitor is added at the ESP32's 5 V pin to stabilize the supply voltage used by the rest of the circuit.
 - **Socketed Mounting:** The ESP32 is connected to the main board via a socket. This allows for easy removal when flashing new firmware, as the board should not be connected to the rest of the circuit during programming.
 
+![ESP32 - PCB layout](Images/PCB_layout/PCB_snippets/ESP32_PCB_layout.jpg)
+
 #### Future Improvements
 - **Direct Microcontroller Integration:** There are plans to redesign the hardware to use only the ESP32 microcontroller chip, eliminating the full devkit. This would:
   - Reduce the overall PCB size
@@ -196,8 +198,6 @@ The current design uses the Nodemcu-32s development board as the core controller
   - Improve signal routing and reduce parasitic effects
   - Allow for more flexible and compact enclosure designs
   - Potentially reduce cost and improve reliability
-
-![ESP32 - PCB layout](Images/PCB_layout/PCB_snippets/ESP32_PCB_layout.jpg)
 
 ---
 
