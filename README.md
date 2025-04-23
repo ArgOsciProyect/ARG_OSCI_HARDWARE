@@ -69,18 +69,20 @@ The input network provides both AC and DC coupling paths. The AC coupling path i
 
 > **Expansion note:** You may add a graph of the high-pass filter response.
 
-![Argosci ESP32 pinout conections](Schematics/Snippets/Input_network.jpg)
+![Input network](Schematics/Snippets/Input_network.jpg)
 
 ### 2. Attenuation Networks
 #### A/B Attenuation Network
-Provides coarse attenuation (e.g., ×40) using precision resistor dividers and mechanical switches (2P2T selector switch).
+Provides coarse attenuation (e.g., ×40) using resistor dividers and mechanical switches (2P2T selector switch).
 
 #### 1/2/3/4 Attenuation Network
-Provides fine attenuation (e.g., ×2.4), yielding eight selectable voltage ranges in combination with the A/B network. This stage uses a 2P4T selector switch.
+Provides fine attenuation (e.g., ×2.4), yielding eight selectable voltage ranges in combination with the A/B network. This stage also uses mechanical switches (2P4T selector switch) and resistor divider networks for attenuation.
 
-![Argosci ESP32 pinout conections](Schematics/Snippets/Attenuation_stage.jpg)
+![Attenuation stage](Schematics/Snippets/Attenuation_stage.jpg)
 
 #### Attenuation Stage Details
+
+The decision to use resistive divider networks in the attenuation stage was made after a thorough analysis of various possible configurations. Different approaches were evaluated based on criteria such as ease of compensation, the number of switches required for implementation, the impedance presented to the amplifier, and other relevant aspects. The chosen solution represents a balance between precision, simplicity, and robustness for the application.
 
 The attenuation stage is designed to maintain an input impedance greater than 1 MΩ. To compensate for the effects of parasitic capacitances —particularly those introduced by the amplifier— capacitors are included in the attenuation network. The total input capacitance of the device is kept below 20pF. Components are selected with 5% tolerance (1% for higher precision if desired), resistors are rated at 1/4 W, and capacitors are rated for at least 25 V, except for the series capacitor in stage B, which must withstand up to 500 V to safely attenuate signals up to 400V when required.
 
@@ -92,7 +94,7 @@ The amplification stage uses the TL082 operational amplifier, chosen for its sui
 
 To minimize errors due to input bias currents, high-value resistors are used in the feedback network. This necessitated the inclusion of a capacitive compensation network (without the need for a trimmer in this case).
 
-> **Image suggestion:** Schematic of the amplifier stage, highlighting feedback networks and compensation capacitors.
+![Amplification stage](Schematics/Snippets/Amplification_stage.jpg)
 > **Expansion note:** Discuss op-amp selection criteria, possible improvements, and test results.
 
 #### Design Considerations and Potential Improvements
@@ -103,7 +105,7 @@ To minimize errors due to input bias currents, high-value resistors are used in 
 
 A conventional first-order RC low-pass filter is used for signal filtering. The filters are designed based on the input capacitance of the ADCs used in each case. Two separate filter networks are implemented, allowing the user to select which ADC to use. For each network, the cutoff frequency is set to the maximum frequency that the device can accurately measure with the selected ADC.
 
-> **Image suggestion:** Circuit diagram of the RC filter networks for both ADCs.
+![Signal filters](Schematics/Snippets/Signal_filters.jpg)
 
 #### Design Considerations and Potential Improvements
 - **Filter Effectiveness Review:** It has been observed that at higher frequencies, aliasing phenomena may occur, distorting the measured signal and its frequency spectrum. A review of the filter effectiveness is recommended, and higher-order filters may be considered to improve performance and reduce aliasing effects.
@@ -112,9 +114,11 @@ A conventional first-order RC low-pass filter is used for signal filtering. The 
 
 The external ADC (ADS7884) circuit is designed following the manufacturer's recommendations. For SPI communication with the ESP32, the layout ensures physical proximity between the ADS7884 and the relevant ESP32 pins, with all SPI traces kept as short and equal in length as possible. These measures are critical to maintain signal integrity at the 40 MHz communication frequency.
 
+![External ADC - PCB layout](Images/PCB_layout/PCB_snippets/Ext_adc_PCB_layout.png)
+
 The ADS7884 is powered by the 3.3 V supply provided by the ESP32's onboard regulator, which also serves as the ADC's voltage reference. The stability of this voltage is crucial for measurement accuracy. To stabilize the supply, an RC network is implemented, consisting of the manufacturer-recommended capacitors and a 100 Ω resistor (subject to further review), in line with the recommended power supply impedance.
 
-> **Image suggestion:** PCB layout close-up showing the ADS7884, SPI traces, and power supply filtering network.
+![External ADC](Schematics/Snippets/External_ADC.jpg)
 
 #### Design Considerations and Potential Improvements
 - **Dedicated Voltage Regulator:** It is recommended to consider adding a dedicated voltage regulator for the ADC to ensure a stable reference voltage, independent of noise from the ESP32 supply.
@@ -134,14 +138,15 @@ The remaining amplifier in the TL082 IC is configured as a comparator. It compar
 #### Digital Signal Adapter
 The digital adapter converts the output of the comparator to voltage levels that are safe and readable by the ESP32: 3.3 V (minimum 2.475 V) for logic high and 0 V (maximum 0.825 V) for logic low. This is achieved using a BAT54 (or BAT85) diode in combination with a resistive divider, which limits current and ensures the output is pulled close to 0 V when the comparator switches to its negative output.
 
-> **Image suggestion:** Schematic showing the RC filter, comparator, and digital adapter stages.
+![Comparator circuit](Schematics/Snippets/Comparator_circuit.jpg)
+
 > **Expansion note:** Add timing diagrams or oscilloscope captures of transient detection events.
 
 ### 7. Calibration Square Wave Generator
 
 The calibration circuit operates using a 1 kHz square wave signal provided by the ESP32, with levels ranging from 0 V to 3.3 V. This signal is attenuated to approximately 30% of its original amplitude using a resistive divider (15 kΩ and 6.8 kΩ), resulting in a safe level for the A2 stage, which is particularly sensitive to parasitic capacitance. The attenuated signal is used specifically to fine-tune the trimmer capacitor in the A2 stage. The resistor values are selected to minimize current draw and reduce loading on the ESP32 output.
 
-> **Image suggestion:** Schematic of the calibration signal generator and attenuation network.
+![Square attenuation](Schematics/Snippets/Square_attenuation.jpg)
 
 ### 8. Connection Status LED Circuit
 
@@ -149,7 +154,7 @@ The purpose of this LED is to indicate when the ESP32 board is ready to accept W
 
 A 5 mm LED is used to increase visibility. A 270 Ω resistor is placed in series, but this value can be adjusted if needed—for example, using a lower resistance to increase brightness. The LED size and resistor value can be modified according to specific design preferences.
 
-> **Image suggestion:** Photo of the assembled board with the status LED highlighted.
+![Connection availability indicator](Schematics/Snippets/Connection_availability_indicator.jpg)
 
 ### 9. Power Supply
 
@@ -159,17 +164,21 @@ The power supply system is designed to provide both +5V and –5V rails required
 - The +5V supply is sourced from the ESP32's 5V pin, which itself is powered via the USB port.
 - A diode-capacitor circuit is used between the USB input and the 5V rail. The presence of the diode causes a slight voltage drop below 5V. While this does not affect the operation of the operational amplifiers, it does slightly shift the voltage levels in the comparator circuit and significantly impacts the generation of the –5V rail via the LM2776.
 
+![Power ESP32](Doc/ESP32/Power_ESP32.png)
+![Positive voltage](Schematics/Snippets/Positive_voltage.jpg)
+
 #### –5V Supply
 - The –5V rail is generated using the LM2776 charge pump IC, implemented according to the manufacturer's recommendations.
 - Stabilization and voltage generation capacitors are placed as close as possible to the LM2776 to ensure proper operation and minimize noise.
 - Since the LM2776 inverts and slightly alters the positive supply voltage, software and firmware corrections are applied to compensate for any offset shifts that could affect ADC readings.
 - There is a known issue with the LM2776 operation that requires further review to ensure reliable negative voltage generation.
 
+![Negative voltage](Schematics/Snippets/Negative_voltage.jpg)
+
 #### External Power Option
 - The PCB provides access to power supply pins, allowing the circuit to be powered externally. This enables bypassing the micro USB and ESP32 for power delivery, and allows for a higher-quality negative voltage supply if needed.
 
-> **Expansion note:** Add a schematic of the power supply section, including USB input, diode-capacitor circuit, LM2776, and external power connectors.
-> **Expansion note:** Document troubleshooting steps and test results for the LM2776 issue.
+![External connectors - PCB layout](Images/PCB_layout/PCB_snippets/Ext_connectors_PCB_layout.jpg)
 
 ### 10. ESP32 Connectivity and Decoupling
 
@@ -188,23 +197,21 @@ The current design uses the Nodemcu-32s development board as the core controller
   - Allow for more flexible and compact enclosure designs
   - Potentially reduce cost and improve reliability
 
-> **Image suggestion:** PCB layout showing ESP32 socket, decoupling capacitor, and short SPI/MCPWM traces.
-> **Expansion note:** Add pinout diagrams and detailed connection tables for reference.
+![ESP32 - PCB layout](Images/PCB_layout/PCB_snippets/ESP32_PCB_layout.jpg)
 
 ---
 
 ## Design Files and Resources
-- **Schematics:** Complete circuit diagrams for all hardware blocks. Located in the `Schematics` folder.
-- **PCB Layout:** Proposed PCB design with Gerber files for manufacturing. Located in the `PCB` folder.
-- **BOM:** Bill of Materials with recommended part numbers and tolerances. Available in the `BOM` folder.
-- **3D Enclosure:** Printable STL files for the device enclosure. Available in the `Case3D` folder.
-- **LTspice Simulations:** Circuit simulation files for analysis and design validation. Recommended folder name: `LTspice_Simulations`.
+- **Schematics**: Complete circuit diagrams for all hardware blocks. Located in the ['Schematics'](Schematics/) folder.
+- **PCB Layout**: Proposed PCB design with Gerber files for manufacturing. Located in the ['PCB'](PCB/) folder.
+- **BOM**: Bill of Materials with recommended part numbers and tolerances. Available in the ['BOM'](BOM/) folder.
+- **3D Enclosure**: Printable STL files for the device enclosure. Available in the ['Case3D'](Case3D/) folder.
+- **LTspice Simulations**: Circuit simulation files for analysis and design validation. Recommended folder name: ['LTspice_Simulations'](LTspice_Simulations/).
 
 > **Additional files:**
-- Technical documentation and manuals in the `Doc` folder.
-- Images and diagrams in the `Images` folder.
+- Technical documentation and manuals in the ['Doc'](Doc/) folder.
+- Images and diagrams in the ['Images'](Images/) folder.
 
-> **Note:** If the repository is published online, it is recommended to add direct download links to each relevant file or folder.
 
 ---
 
