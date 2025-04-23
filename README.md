@@ -26,6 +26,8 @@
   - [Protection and Safety](#protection-and-safety)
   - [Optional Simplifications](#optional-simplifications)
   - [Design and Layout](#design-and-layout)
+  - [PCB Design](#pcb-design)
+  - [3D Case Design](#3d-case-design)
 - [Pending Tasks and Recommendations](#pending-tasks-and-recommendations)
   - [Technical Improvements](#technical-improvements)
   - [Documentation and Usability](#documentation-and-usability)
@@ -212,7 +214,6 @@ The current design uses the Nodemcu-32s development board as the core controller
 - Technical documentation and manuals in the ['Doc'](Doc/) folder.
 - Images and diagrams in the ['Images'](Images/) folder.
 
-
 ---
 
 ## Construction and Improvement Notes
@@ -248,6 +249,14 @@ Note: The current PCB does not include footprints for these components.
 - PCB layout can be further optimized for EMC and signal integrity.
 - The enclosure design may be adapted or improved for robustness.
 - More compact PCB designs are planned, including protection features and direct microcontroller integration (without the devkit).
+
+### PCB Design
+The PCB was designed following standard practices, prioritizing functional block separation and signal integrity as described in previous sections. No special layout considerations beyond those already mentioned were required.
+
+### 3D Case Design
+The 3D case was designed to fit the PCB and provide basic protection. No special design constraints or requirements were considered beyond ensuring proper fit.
+
+> **Note:** If electromagnetic shielding is desired to reduce interference, keep in mind that the device connects via WiFi. Any shielding solution should be implemented with care to avoid degrading wireless communication performance.
 
 ---
 
