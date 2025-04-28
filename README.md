@@ -10,28 +10,31 @@
 - [Introduction](#introduction)
 - [Design Overview](#design-overview)
 - [Implementation Details](#implementation-details)
-  - [Input Network](#1-input-network)
-  - [Attenuation Networks](#2-attenuation-networks)
-  - [Amplification Stage](#3-amplification-stage)
-  - [Signal Filtering](#4-signal-filtering)
-  - [External ADC Circuit](#5-external-adc-circuit)
-  - [Transient Comparator Circuit](#6-transient-comparator-circuit)
-  - [Calibration Square Wave Generator](#7-calibration-square-wave-generator)
-  - [Connection Status LED Circuit](#8-connection-status-led-circuit)
-  - [Power Supply](#9-power-supply)
-  - [ESP32 Connectivity and Decoupling](#10-esp32-connectivity-and-decoupling)
+  1. [Input Network](#1-input-network)
+  2. [Attenuation Networks](#2-attenuation-networks)
+     2.1. [A/B Attenuation Network](#ab-attenuation-network)
+     2.2. [1/2/3/4 Attenuation Network](#1234-attenuation-network)
+     2.3. [Attenuation Stage Details](#attenuation-stage-details)
+  3. [Amplification Stage](#3-amplification-stage)
+  4. [Signal Filtering](#4-signal-filtering)
+  5. [External ADC Circuit](#5-external-adc-circuit)
+  6. [Transient Comparator Circuit](#6-transient-comparator-circuit)
+  7. [Calibration Square Wave Generator](#7-calibration-square-wave-generator)
+  8. [Connection Status LED Circuit](#8-connection-status-led-circuit)
+  9. [Power Supply](#9-power-supply)
+  10. [ESP32 Connectivity and Decoupling](#10-esp32-connectivity-and-decoupling)
 - [Design Files and Resources](#design-files-and-resources)
 - [Construction and Improvement Notes](#construction-and-improvement-notes)
-  - [Assembly and Component Selection](#assembly-and-component-selection)
-  - [Protection and Safety](#protection-and-safety)
-  - [Optional Simplifications](#optional-simplifications)
-  - [Design and Layout](#design-and-layout)
-  - [PCB Design](#pcb-design)
-  - [3D Case Design](#3d-case-design)
+  1. [Assembly and Component Selection](#assembly-and-component-selection)
+  2. [Protection and Safety](#protection-and-safety)
+  3. [Optional Simplifications](#optional-simplifications)
+  4. [Design and Layout](#design-and-layout)
+  5. [PCB Design](#pcb-design)
+  6. [3D Case Design](#3d-case-design)
 - [Pending Tasks and Recommendations](#pending-tasks-and-recommendations)
-  - [Technical Improvements](#technical-improvements)
-  - [Documentation and Usability](#documentation-and-usability)
-  - [Future Development](#future-development)
+  1. [Technical Improvements](#technical-improvements)
+  2. [Documentation and Usability](#documentation-and-usability)
+  3. [Future Development](#future-development)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
 
@@ -74,15 +77,15 @@ The input network provides both AC and DC coupling paths. The AC coupling path i
 ![Input network](Schematics/Snippets/Input_network.jpg)
 
 ### 2. Attenuation Networks
-#### A/B Attenuation Network
+#### 2.1. A/B Attenuation Network
 Provides coarse attenuation (e.g., ×40) using resistor dividers and mechanical switches (2P2T selector switch).
 
-#### 1/2/3/4 Attenuation Network
+#### 2.2. 1/2/3/4 Attenuation Network
 Provides fine attenuation (e.g., ×2.4), yielding eight selectable voltage ranges in combination with the A/B network. This stage also uses mechanical switches (2P4T selector switch) and resistor divider networks for attenuation.
 
 ![Attenuation stage](Schematics/Snippets/Attenuation_stage.jpg)
 
-#### Attenuation Stage Details
+#### 2.3. Attenuation Stage Details
 
 The decision to use resistive divider networks in the attenuation stage was made after a thorough analysis of various possible configurations. Different approaches were evaluated based on criteria such as ease of compensation, the number of switches required for implementation, the impedance presented to the amplifier, and other relevant aspects. The chosen solution represents a balance between precision, simplicity, and robustness for the application.
 
@@ -159,17 +162,14 @@ A 5 mm LED is used to increase visibility. A 270 Ω resistor is placed in se
 ![Connection availability indicator](Schematics/Snippets/Connection_availability_indicator.jpg)
 
 ### 9. Power Supply
-
-The power supply system is designed to provide both +5V and –5V rails required by the analog and digital circuitry:
-
-#### +5V Supply
+#### 9.1. +5V Supply
 - The +5V supply is sourced from the ESP32's 5V pin, which itself is powered via the USB port.
 - A diode-capacitor circuit is used between the USB input and the 5V rail. The presence of the diode causes a slight voltage drop below 5V. While this does not affect the operation of the operational amplifiers, it does slightly shift the voltage levels in the comparator circuit and significantly impacts the generation of the –5V rail via the LM2776.
 
 ![Power ESP32](Doc/ESP32/Power_ESP32.png)
 ![Positive voltage](Schematics/Snippets/Positive_voltage.jpg)
 
-#### –5V Supply
+#### 9.2. –5V Supply
 - The –5V rail is generated using the LM2776 charge pump IC, implemented according to the manufacturer's recommendations.
 - Stabilization and voltage generation capacitors are placed as close as possible to the LM2776 to ensure proper operation and minimize noise.
 - Since the LM2776 inverts and slightly alters the positive supply voltage, software and firmware corrections are applied to compensate for any offset shifts that could affect ADC readings.
@@ -177,23 +177,13 @@ The power supply system is designed to provide both +5V and –5V rails required
 
 ![Negative voltage](Schematics/Snippets/Negative_voltage.jpg)
 
-#### External Power Option
+#### 9.3. External Power Option
 - The PCB provides access to power supply pins, allowing the circuit to be powered externally. This enables bypassing the micro USB and ESP32 for power delivery, and allows for a higher-quality negative voltage supply if needed.
 
 ![External connectors - PCB layout](Images/PCB_layout/PCB_snippets/Ext_connectors_PCB_layout.jpg)
 
 ### 10. ESP32 Connectivity and Decoupling
-
-The current design uses the Nodemcu-32s development board as the core controller. Key considerations for integrating the ESP32 with the rest of the circuit include:
-
-- **Connection to ADS7884:** Special care is taken with the physical connection between the ESP32 and the ADS7884 ADC, as previously described. SPI traces should be as short and direct as possible to ensure reliable high-speed communication.
-- **MCPWM and SPI Synchronization Pins:** The MCPWM and SPI libraries both use GPIO2 and GPIO15 for synchronization. These pins must be routed with minimal length to reduce latency and signal integrity issues.
-- **Power Supply Decoupling:** A 100 nF capacitor is added at the ESP32's 5 V pin to stabilize the supply voltage used by the rest of the circuit.
-- **Socketed Mounting:** The ESP32 is connected to the main board via a socket. This allows for easy removal when flashing new firmware, as the board should not be connected to the rest of the circuit during programming.
-
-![ESP32 - PCB layout](Images/PCB_layout/PCB_snippets/ESP32_PCB_layout.jpg)
-
-#### Future Improvements
+#### 10.1. Future Improvements
 - **Direct Microcontroller Integration:** There are plans to redesign the hardware to use only the ESP32 microcontroller chip, eliminating the full devkit. This would:
   - Reduce the overall PCB size
   - Simplify flashing and programming
@@ -218,7 +208,7 @@ The current design uses the Nodemcu-32s development board as the core controller
 
 ## Construction and Improvement Notes
 
-### Assembly and Component Selection
+### 1. Assembly and Component Selection
 - For best measurement accuracy, use 1% tolerance components in the following order of priority:
   1. Amplification circuit (affects all scales and frequencies)
   2. A/B attenuation circuit (affects upper half of scales, 40x attenuation)
@@ -229,7 +219,7 @@ The current design uses the Nodemcu-32s development board as the core controller
 - Both the internal ESP32 ADC and the external ADC present nonlinearities, though the external ADC is more accurate.
 - Pay special attention to the correct wiring of the attenuation scales and selector logic during assembly. Errors here can damage multiple components.
 
-### Protection and Safety
+### 2. Protection and Safety
 - It is strongly recommended to add fuse-varistor protection circuits to safeguard the integrity of the attenuation stages:
   - 12.5 V varistor in stage A
   - 500 V varistor in stage B
@@ -237,7 +227,7 @@ The current design uses the Nodemcu-32s development board as the core controller
 
 Note: The current PCB does not include footprints for these components.
 
-### Optional Simplifications
+### 3. Optional Simplifications
 - The following stages can be omitted to reduce PCB size, simplify construction, or save on materials:
   - B attenuation stage (if high-voltage operation is not required)
   - AC/DC selection stage
@@ -245,15 +235,15 @@ Note: The current PCB does not include footprints for these components.
   - ADC input filter for any unused ADC
 - If the LM2776 IC is unavailable, substitute with a similar IC (ensure correct pinout) or provide a negative voltage rail externally.
 
-### Design and Layout
+### 4. Design and Layout
 - PCB layout can be further optimized for EMC and signal integrity.
 - The enclosure design may be adapted or improved for robustness.
 - More compact PCB designs are planned, including protection features and direct microcontroller integration (without the devkit).
 
-### PCB Design
+### 5. PCB Design
 The PCB was designed following standard practices, prioritizing functional block separation and signal integrity as described in previous sections. No special layout considerations beyond those already mentioned were required.
 
-### 3D Case Design
+### 6. 3D Case Design
 The 3D case was designed to fit the PCB and provide basic protection. No special design constraints or requirements were considered beyond ensuring proper fit.
 
 > **Note:** If electromagnetic shielding is desired to reduce interference, keep in mind that the device connects via WiFi. Any shielding solution should be implemented with care to avoid degrading wireless communication performance.
@@ -262,17 +252,17 @@ The 3D case was designed to fit the PCB and provide basic protection. No special
 
 ## Pending Tasks and Recommendations
 
-### Technical Improvements
+### 1. Technical Improvements
 - Complete a detailed error analysis and document the results for all acquisition paths.
 - Review and improve the negative power supply design, including alternatives to the LM2776.
 - Consider implementing higher-order input filters to improve signal fidelity and reduce aliasing.
 - Evaluate and document the effectiveness of protection circuits and their impact on measurement reliability.
 
-### Documentation and Usability
+### 2. Documentation and Usability
 - Provide step-by-step assembly instructions and detailed test procedures.
 - Add troubleshooting and known issues sections to assist users during assembly and operation.
 
-### Future Development
+### 3. Future Development
 - Develop and release more compact PCB designs with integrated protections and without the devkit.
 - Explore the possibility of omitting or modularizing optional stages for different use cases.
 
