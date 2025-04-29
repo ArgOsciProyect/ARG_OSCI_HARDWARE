@@ -72,7 +72,7 @@ The hardware is divided into several functional blocks:
 
 The input network provides both AC and DC coupling paths. The AC coupling path includes a series capacitor (150 nF), while the DC path is direct. The 150 nF capacitor must be rated for at least 500V to safely block DC voltages up to the device's maximum scale (±400V). The capacitor value was selected to achieve a cutoff frequency below 1 Hz, considering that the input impedance is always greater than 1MΩ (typically 1070 MΩ to 1500 MΩ, depending on the attenuation setting). This configuration forms a high-pass filter and ensures accurate measurement of AC signals above 1Hz, with a settling time of approximately 1 second after switching to AC coupling.
 
-> **Expansion note:** You may add a graph of the high-pass filter response.
+<!--**Expansion note:** You may add a graph of the high-pass filter response.-->
 
 ![Input network](Schematics/Snippets/Input_network.jpg)
 
@@ -100,7 +100,7 @@ The amplification stage uses the TL082 operational amplifier, chosen for its sui
 To minimize errors due to input bias currents, high-value resistors are used in the feedback network. This necessitated the inclusion of a capacitive compensation network (without the need for a trimmer in this case).
 
 ![Amplification stage](Schematics/Snippets/Amplification_stage.jpg)
-> **Expansion note:** Discuss op-amp selection criteria, possible improvements, and test results.
+<!--**Expansion note:** Discuss op-amp selection criteria, possible improvements, and test results.-->
 
 #### Design Considerations and Potential Improvements
 - **Resistor Value Optimization:** It is being considered to reduce the values of the feedback resistors, as the error from bias currents is relatively low. Lowering these values could allow the removal of the compensation network, though a capacitor should still be retained to filter noise from the –5V supply. This change would increase the device's power consumption and should be evaluated accordingly.
@@ -145,7 +145,7 @@ The digital adapter converts the output of the comparator to voltage levels that
 
 ![Comparator circuit](Schematics/Snippets/Comparator_circuit.jpg)
 
-> **Expansion note:** Add timing diagrams or oscilloscope captures of transient detection events.
+<!--**Expansion note:** Add timing diagrams or oscilloscope captures of transient detection events.-->
 
 ### 7. Calibration Square Wave Generator
 
